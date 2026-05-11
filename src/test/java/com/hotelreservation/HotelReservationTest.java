@@ -21,8 +21,14 @@ public class HotelReservationTest {
     }
 
     @Test
-    public void givenDateRange_ShouldReturnCheapestHotel() {
+    public void givenDateRange_WhenWeekday_ShouldReturnCheapestHotel() {
         String cheapestHotel = service.findCheapestHotel("10Sep2020", "11Sep2020");
         assertEquals("Lakewood, Total Rates: $220", cheapestHotel);
+    }
+
+    @Test
+    public void givenDateRange_WhenWeekdayAndWeekend_ShouldReturnCheapestHotels() {
+        String cheapestHotel = service.findCheapestHotel("11Sep2020", "12Sep2020");
+        assertEquals("Lakewood and Bridgewood, Total Rates: $200", cheapestHotel);
     }
 }

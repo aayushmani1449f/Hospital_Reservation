@@ -27,15 +27,33 @@ public class HotelReservationService {
         LocalDate startDate = LocalDate.parse(startDateStr, formatter);
         LocalDate endDate = LocalDate.parse(endDateStr, formatter);
 
-        long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        long minTotalRate = Long.MAX_VALUE;
+        List<String> cheapestHotels = new ArrayList<>();
 
-        Hotel cheapestHotel = hotels.stream()
-                .min(Comparator.comparingInt(h -> h.getWeekdayRate()))
-                .orElse(null);
+        for (Hotel hotel : hotels) {
+            long totalRate = 0;
+            LocalDate tempDate = startDate;
+            while (!tempDate.isAfter(endDate)) {
+                int dayOfWeek = tempDate.getDayOfWeek().getValue();
+                if (dayOfWeek == 6 || dayOfWeek == 7) {
+                    totalRate += hotel.getWeekendRate();
+                } else {
+                    totalRate += hotel.getWeekdayRate();
+                }
+                tempDate = tempDate.plusDays(1);
+            }
 
-        if (cheapestHotel != null) {
-            long totalRate = cheapestHotel.getWeekdayRate() * numberOfDays;
-            return cheapestHotel.getName() + ", Total Rates: $" + totalRate;
+            if (totalRate < minTotalRate) {
+                minTotalRate = totalRate;
+                cheapestHotels.clear();
+                cheapestHotels.add(hotel.getName());
+            } else if (totalRate == minTotalRate) {
+                cheapestHotels.add(hotel.getName());
+            }
+        }
+
+        if (!cheapestHotels.isEmpty()) {
+            return String.join(" and ", cheapestHotels) + ", Total Rates: $" + minTotalRate;
         }
         return null;
     }
