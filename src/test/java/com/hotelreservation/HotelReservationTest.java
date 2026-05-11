@@ -31,4 +31,10 @@ public class HotelReservationTest {
         String hotel = service.findCheapestBestRatedHotel("11Sep2020", "12Sep2020");
         assertEquals("Bridgewood, Rating: 4 and Total Rates: $200", hotel);
     }
+
+    @Test
+    public void givenDateRange_ShouldReturnBestRatedHotel() {
+        String hotel = service.findBestRatedHotel("11Sep2020", "12Sep2020");
+        assertEquals("Ridgewood & Total Rates $370", hotel);
+    }
 }

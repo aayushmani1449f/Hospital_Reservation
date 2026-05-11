@@ -61,4 +61,30 @@ public class HotelReservationService {
         }
         return null;
     }
+
+    public String findBestRatedHotel(String startDateStr, String endDateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMuuuu");
+        LocalDate startDate = LocalDate.parse(startDateStr, formatter);
+        LocalDate endDate = LocalDate.parse(endDateStr, formatter);
+
+        Hotel bestRatedHotel = hotels.stream()
+                .max(Comparator.comparingInt(Hotel::getRating))
+                .orElse(null);
+
+        if (bestRatedHotel != null) {
+            long totalRate = 0;
+            LocalDate tempDate = startDate;
+            while (!tempDate.isAfter(endDate)) {
+                int dayOfWeek = tempDate.getDayOfWeek().getValue();
+                if (dayOfWeek == 6 || dayOfWeek == 7) {
+                    totalRate += bestRatedHotel.getWeekendRate();
+                } else {
+                    totalRate += bestRatedHotel.getWeekdayRate();
+                }
+                tempDate = tempDate.plusDays(1);
+            }
+            return bestRatedHotel.getName() + " & Total Rates $" + totalRate;
+        }
+        return null;
+    }
 }
