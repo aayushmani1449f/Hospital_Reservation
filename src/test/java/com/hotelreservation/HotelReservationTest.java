@@ -45,6 +45,12 @@ public class HotelReservationTest {
     }
 
     @Test
+    public void givenDateRangeAndRegularCustomer_ShouldReturnCheapestBestRatedHotel() throws Exception {
+        String hotel = service.findCheapestBestRatedHotel("Regular", "11Sep2020", "12Sep2020");
+        assertEquals("Bridgewood, Rating: 4 and Total Rates: $200", hotel);
+    }
+
+    @Test
     public void givenInvalidCustomerType_ShouldThrowException() {
         try {
             service.findCheapestBestRatedHotel("Invalid", "11Sep2020", "12Sep2020");
