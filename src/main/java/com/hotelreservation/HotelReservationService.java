@@ -22,13 +22,13 @@ public class HotelReservationService {
         return hotels;
     }
 
-    public String findCheapestHotel(String startDateStr, String endDateStr) {
+    public String findCheapestBestRatedHotel(String startDateStr, String endDateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMuuuu");
         LocalDate startDate = LocalDate.parse(startDateStr, formatter);
         LocalDate endDate = LocalDate.parse(endDateStr, formatter);
 
         long minTotalRate = Long.MAX_VALUE;
-        List<String> cheapestHotels = new ArrayList<>();
+        List<Hotel> cheapestHotels = new ArrayList<>();
 
         for (Hotel hotel : hotels) {
             long totalRate = 0;
@@ -46,14 +46,18 @@ public class HotelReservationService {
             if (totalRate < minTotalRate) {
                 minTotalRate = totalRate;
                 cheapestHotels.clear();
-                cheapestHotels.add(hotel.getName());
+                cheapestHotels.add(hotel);
             } else if (totalRate == minTotalRate) {
-                cheapestHotels.add(hotel.getName());
+                cheapestHotels.add(hotel);
             }
         }
 
         if (!cheapestHotels.isEmpty()) {
-            return String.join(" and ", cheapestHotels) + ", Total Rates: $" + minTotalRate;
+            Hotel bestRatedCheapestHotel = cheapestHotels.stream()
+                    .max(Comparator.comparingInt(Hotel::getRating))
+                    .orElse(cheapestHotels.get(0));
+
+            return bestRatedCheapestHotel.getName() + ", Rating: " + bestRatedCheapestHotel.getRating() + " and Total Rates: $" + minTotalRate;
         }
         return null;
     }

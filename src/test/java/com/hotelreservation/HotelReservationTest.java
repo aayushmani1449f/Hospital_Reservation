@@ -21,14 +21,14 @@ public class HotelReservationTest {
     }
 
     @Test
-    public void givenDateRange_WhenWeekday_ShouldReturnCheapestHotel() {
-        String cheapestHotel = service.findCheapestHotel("10Sep2020", "11Sep2020");
-        assertEquals("Lakewood, Total Rates: $220", cheapestHotel);
+    public void givenDateRange_WhenWeekday_ShouldReturnCheapestBestRatedHotel() {
+        String hotel = service.findCheapestBestRatedHotel("10Sep2020", "11Sep2020");
+        assertEquals("Lakewood, Rating: 3 and Total Rates: $220", hotel);
     }
 
     @Test
-    public void givenDateRange_WhenWeekdayAndWeekend_ShouldReturnCheapestHotels() {
-        String cheapestHotel = service.findCheapestHotel("11Sep2020", "12Sep2020");
-        assertEquals("Lakewood and Bridgewood, Total Rates: $200", cheapestHotel);
+    public void givenDateRange_WhenWeekdayAndWeekend_ShouldReturnCheapestBestRatedHotel() {
+        String hotel = service.findCheapestBestRatedHotel("11Sep2020", "12Sep2020");
+        assertEquals("Bridgewood, Rating: 4 and Total Rates: $200", hotel);
     }
 }
