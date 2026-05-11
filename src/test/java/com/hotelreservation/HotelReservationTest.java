@@ -37,4 +37,28 @@ public class HotelReservationTest {
         String hotel = service.findBestRatedHotel("11Sep2020", "12Sep2020");
         assertEquals("Ridgewood & Total Rates $370", hotel);
     }
+
+    @Test
+    public void givenDateRangeAndRewardsCustomer_ShouldReturnCheapestBestRatedHotel() throws Exception {
+        String hotel = service.findCheapestBestRatedHotel("Rewards", "11Sep2020", "12Sep2020");
+        assertEquals("Ridgewood, Rating: 5 and Total Rates: $140", hotel);
+    }
+
+    @Test
+    public void givenInvalidCustomerType_ShouldThrowException() {
+        try {
+            service.findCheapestBestRatedHotel("Invalid", "11Sep2020", "12Sep2020");
+        } catch (Exception e) {
+            assertEquals("Invalid Customer Type", e.getMessage());
+        }
+    }
+
+    @Test
+    public void givenInvalidDate_ShouldThrowException() {
+        try {
+            service.findCheapestBestRatedHotel("Rewards", "11/09/2020", "12Sep2020");
+        } catch (Exception e) {
+            assertEquals("Invalid Date Format", e.getMessage());
+        }
+    }
 }
