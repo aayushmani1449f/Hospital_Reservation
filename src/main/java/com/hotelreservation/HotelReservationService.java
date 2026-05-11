@@ -104,39 +104,36 @@ public class HotelReservationService {
         LocalDate startDate = LocalDate.parse(startDateStr, formatter);
         LocalDate endDate = LocalDate.parse(endDateStr, formatter);
 
-        long minTotalRate = Long.MAX_VALUE;
-        List<Hotel> cheapestHotels = new ArrayList<>();
+        long numberOfDays = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        List<LocalDate> dateList = java.util.stream.Stream.iterate(startDate, date -> date.plusDays(1))
+                .limit(numberOfDays)
+                .collect(java.util.stream.Collectors.toList());
 
-        for (Hotel hotel : hotels) {
-            long totalRate = 0;
-            LocalDate tempDate = startDate;
-            while (!tempDate.isAfter(endDate)) {
-                int dayOfWeek = tempDate.getDayOfWeek().getValue();
-                boolean isWeekend = (dayOfWeek == 6 || dayOfWeek == 7);
-                if (type == CustomerType.REWARDS) {
-                    totalRate += isWeekend ? hotel.getRewardsWeekendRate() : hotel.getRewardsWeekdayRate();
-                } else {
-                    totalRate += isWeekend ? hotel.getWeekendRate() : hotel.getWeekdayRate();
-                }
-                tempDate = tempDate.plusDays(1);
-            }
+        long minTotalRate = hotels.stream()
+                .mapToLong(hotel -> calculateTotalRate(hotel, type, dateList))
+                .min()
+                .orElse(Long.MAX_VALUE);
 
-            if (totalRate < minTotalRate) {
-                minTotalRate = totalRate;
-                cheapestHotels.clear();
-                cheapestHotels.add(hotel);
-            } else if (totalRate == minTotalRate) {
-                cheapestHotels.add(hotel);
-            }
-        }
+        Hotel bestRatedCheapestHotel = hotels.stream()
+                .filter(hotel -> calculateTotalRate(hotel, type, dateList) == minTotalRate)
+                .max(Comparator.comparingInt(Hotel::getRating))
+                .orElse(null);
 
-        if (!cheapestHotels.isEmpty()) {
-            Hotel bestRatedCheapestHotel = cheapestHotels.stream()
-                    .max(Comparator.comparingInt(Hotel::getRating))
-                    .orElse(cheapestHotels.get(0));
-
+        if (bestRatedCheapestHotel != null) {
             return bestRatedCheapestHotel.getName() + ", Rating: " + bestRatedCheapestHotel.getRating() + " and Total Rates: $" + minTotalRate;
         }
         return null;
+    }
+
+    private long calculateTotalRate(Hotel hotel, CustomerType type, List<LocalDate> dateList) {
+        return dateList.stream().mapToLong(date -> {
+            int dayOfWeek = date.getDayOfWeek().getValue();
+            boolean isWeekend = (dayOfWeek == 6 || dayOfWeek == 7);
+            if (type == CustomerType.REWARDS) {
+                return isWeekend ? hotel.getRewardsWeekendRate() : hotel.getRewardsWeekdayRate();
+            } else {
+                return isWeekend ? hotel.getWeekendRate() : hotel.getWeekdayRate();
+            }
+        }).sum();
     }
 }
