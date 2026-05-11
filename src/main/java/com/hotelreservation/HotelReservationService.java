@@ -30,11 +30,11 @@ public class HotelReservationService {
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
         Hotel cheapestHotel = hotels.stream()
-                .min(Comparator.comparingInt(h -> h.getRegularRate()))
+                .min(Comparator.comparingInt(h -> h.getWeekdayRate()))
                 .orElse(null);
 
         if (cheapestHotel != null) {
-            long totalRate = cheapestHotel.getRegularRate() * numberOfDays;
+            long totalRate = cheapestHotel.getWeekdayRate() * numberOfDays;
             return cheapestHotel.getName() + ", Total Rates: $" + totalRate;
         }
         return null;
