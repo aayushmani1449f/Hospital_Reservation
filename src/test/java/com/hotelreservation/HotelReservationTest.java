@@ -10,9 +10,9 @@ public class HotelReservationTest {
     @BeforeEach
     public void setup() {
         service = new HotelReservationService();
-        service.addHotel(new Hotel("Lakewood", 110, 90));
-        service.addHotel(new Hotel("Bridgewood", 150, 50));
-        service.addHotel(new Hotel("Ridgewood", 220, 150));
+        service.addHotel(new Hotel("Lakewood", 110, 90, 3));
+        service.addHotel(new Hotel("Bridgewood", 150, 50, 4));
+        service.addHotel(new Hotel("Ridgewood", 220, 150, 5));
     }
 
     @Test
